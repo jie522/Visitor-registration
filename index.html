@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>訪客登記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-60: #0f62fe;
+    --blue-70: #0043ce;
+    --blue-10: #edf5ff;
+    --gray-100: #161616;
+    --gray-90: #262626;
+    --gray-70: #525252;
+    --gray-50: #8d8d8d;
+    --gray-20: #e0e0e0;
+    --gray-10: #f4f4f4;
+    --white: #ffffff;
+    --green-50: #24a148;
+    --red-60: #da1e28;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--white);
+    color: var(--gray-100);
+    font-family: "IBM Plex Sans TC", "IBM Plex Sans", "Noto Sans TC", -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    background: var(--gray-100);
+    color: var(--white);
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 4px solid var(--blue-60);
+  }
+
+  header .mark {
+    width: 28px;
+    height: 28px;
+    background: var(--blue-60);
+    flex: none;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  header p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--gray-50);
+  }
+
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  .intro {
+    font-size: 13px;
+    color: var(--gray-70);
+    line-height: 1.5;
+    margin: 0 0 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--gray-20);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-100);
+    margin-bottom: 8px;
+  }
+
+  .field .req {
+    color: var(--red-60);
+    margin-left: 2px;
+  }
+
+  .field input,
+  .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--gray-100);
+    background: var(--gray-10);
+    border: none;
+    border-bottom: 1px solid var(--gray-50);
+    border-radius: 0;
+    outline: none;
+    transition: background-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+  }
+
+  .field input::placeholder { color: var(--gray-50); }
+
+  .field input:hover,
+  .field select:hover { background: #e8e8e8; }
+
+  .field input:focus,
+  .field select:focus {
+    background: var(--gray-10);
+    border-bottom: 2px solid var(--blue-60);
+    box-shadow: inset 0 0 0 2px var(--blue-60), inset 0 -2px 0 0 var(--blue-60);
+    padding-left: 15px;
+  }
+
+  .field .hint {
+    font-size: 12px;
+    color: var(--gray-70);
+    margin-top: 6px;
+  }
+
+  .field .error {
+    font-size: 12px;
+    color: var(--red-60);
+    margin-top: 6px;
+    display: none;
+  }
+
+  .field.invalid input {
+    box-shadow: inset 0 0 0 1px var(--red-60);
+    border-bottom: 1px solid var(--red-60);
+  }
+
+  .field.invalid .error { display: block; }
+
+  select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23161616' d='M8 11L3 6l.7-.7L8 9.6l4.3-4.3.7.7z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+
+  button[type="submit"] {
+    margin-top: 8px;
+    height: 52px;
+    background: var(--blue-60);
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+  }
+
+  button[type="submit"]:hover { background: var(--blue-70); }
+  button[type="submit"]:disabled { background: var(--gray-50); cursor: not-allowed; }
+
+  button[type="submit"] .arrow { font-size: 18px; line-height: 1; }
+
+  .status {
+    margin-top: 20px;
+    padding: 16px;
+    font-size: 14px;
+    display: none;
+    align-items: flex-start;
+    gap: 10px;
+    border-left: 3px solid transparent;
+  }
+
+  .status.show { display: flex; }
+
+  .status.success {
+    background: #defbe6;
+    border-left-color: var(--green-50);
+    color: #0e6027;
+  }
+
+  .status.error {
+    background: #fff1f1;
+    border-left-color: var(--red-60);
+    color: #a2191f;
+  }
+
+  .status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex: none;
+    background: currentColor;
+  }
+
+  footer {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px 32px;
+    font-size: 11px;
+    color: var(--gray-50);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="mark"></div>
+    <div>
+      <h1>訪客登記表</h1>
+      <p>260713 · Visitor Registration</p>
+    </div>
+  </header>
+
+  <main>
+    <p class="intro">請填寫以下資料完成訪客登記，資料將直接送出予櫃檯 / 對接同仁確認。</p>
+
+    <form id="visitorForm" novalidate>
+      <div class="field" data-field="date">
+        <label for="date">日期 <span class="req">*</span></label>
+        <input type="date" id="date" name="date" required>
+        <div class="error">請選擇日期</div>
+      </div>
+
+      <div class="field" data-field="vendor">
+        <label for="vendor">廠商 <span class="req">*</span></label>
+        <input type="text" id="vendor" name="vendor" placeholder="請輸入公司 / 廠商名稱" required>
+        <div class="error">請輸入廠商名稱</div>
+      </div>
+
+      <div class="field" data-field="name">
+        <label for="name">姓名 <span class="req">*</span></label>
+        <input type="text" id="name" name="name" placeholder="請輸入訪客姓名" required>
+        <div class="error">請輸入姓名</div>
+      </div>
+
+      <div class="field" data-field="arrival">
+        <label for="arrival">預計抵達時間 <span class="req">*</span></label>
+        <input type="time" id="arrival" name="arrival" required>
+        <div class="error">請選擇預計抵達時間</div>
+      </div>
+
+      <div class="field" data-field="contact">
+        <label for="contact">對接同仁 <span class="req">*</span></label>
+        <input type="text" id="contact" name="contact" placeholder="請輸入對接同仁姓名" required>
+        <div class="error">請輸入對接同仁</div>
+      </div>
+
+      <button type="submit" id="submitBtn">
+        <span id="submitLabel">送出登記</span>
+        <span class="arrow" id="submitArrow">→</span>
+      </button>
+
+      <div class="status" id="statusBox">
+        <div class="dot"></div>
+        <div id="statusText"></div>
+      </div>
+    </form>
+  </main>
+
+  <footer>由 Google Sheet 驅動 · 資料僅供內部訪客管理使用</footer>
+
+<script>
+  // 部署 Apps Script Web App 後，將網址貼在這裡
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwe6O7oCqGGjeg8qPuSil5B_5G2pNY_j1I9N2WXzXTo1B_UHq2n2SoYa-LgswTv0sXt/exec";
+
+  const form = document.getElementById("visitorForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const submitLabel = document.getElementById("submitLabel");
+  const statusBox = document.getElementById("statusBox");
+  const statusText = document.getElementById("statusText");
+
+  // 日期預設今天
+  const dateInput = document.getElementById("date");
+  const today = new Date();
+  dateInput.value = today.toISOString().slice(0, 10);
+
+  function setStatus(type, message) {
+    statusBox.className = "status show " + type;
+    statusText.textContent = message;
+  }
+
+  function validate() {
+    let valid = true;
+    form.querySelectorAll(".field").forEach((field) => {
+      const input = field.querySelector("input");
+      if (!input.value) {
+        field.classList.add("invalid");
+        valid = false;
+      } else {
+        field.classList.remove("invalid");
+      }
+    });
+    return valid;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    statusBox.className = "status";
+
+    if (!validate()) {
+      setStatus("error", "請完整填寫所有必填欄位");
+      return;
+    }
+
+    if (!GAS_URL || GAS_URL === "PASTE_YOUR_WEB_APP_URL_HERE") {
+      setStatus("error", "尚未設定 Google Apps Script 網址，請聯絡系統管理員");
+      return;
+    }
+
+    const payload = {
+      date: dateInput.value,
+      vendor: document.getElementById("vendor").value.trim(),
+      name: document.getElementById("name").value.trim(),
+      arrival: document.getElementById("arrival").value,
+      contact: document.getElementById("contact").value.trim(),
+    };
+
+    submitBtn.disabled = true;
+    submitLabel.textContent = "送出中...";
+
+    try {
+      await fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+
+      setStatus("success", "登記成功，感謝您的到訪！");
+      form.reset();
+      dateInput.value = today.toISOString().slice(0, 10);
+    } catch (err) {
+      setStatus("error", "送出失敗，請確認網路連線後重試");
+    } finally {
+      submitBtn.disabled = false;
+      submitLabel.textContent = "送出登記";
+    }
+  });
+</script>
+</body>
+</html>
