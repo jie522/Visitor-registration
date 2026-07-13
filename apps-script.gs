@@ -10,6 +10,14 @@
  * 需要在同一份試算表中，另外建立一個名為「廠商名單」的工作表，
  * 欄位依序為：統編 / 廠商 / 姓名 / 對接同仁（第一列為標題列）。
  * 特約廠商登入時會用統編查詢這張表，自動帶入廠商 / 姓名 / 對接同仁。
+ *
+ * --- Synology Chat 通知（選用）---
+ * 1. Synology Chat 後台 →「整合」→「Incoming Webhook」→ 新增，複製 Webhook 網址
+ *    （網址主機部分要用 QuickConnect 或 DDNS 對外網址，不能用內網 IP）
+ * 2. 在這個 Apps Script 專案：左側齒輪圖示「專案設定」→「指令碼屬性」→ 新增屬性
+ *    屬性名稱：SYNO_WEBHOOK_URL　值：貼上剛剛複製的 Webhook 網址
+ *    （這樣 Token 只存在 Apps Script 裡，不會出現在 GitHub 原始碼中）
+ * 3. 沒有設定這個屬性時，通知會自動略過，不影響登記本身。
  */
 
 var VENDOR_SHEET_NAME = "廠商名單";
@@ -26,9 +34,34 @@ function doPost(e) {
     data.contact || "",
   ]);
 
+  notifySynologyChat(data);
+
   return ContentService
     .createTextOutput(JSON.stringify({ result: "success" }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function notifySynologyChat(data) {
+  var webhookUrl = PropertiesService.getScriptProperties().getProperty("SYNO_WEBHOOK_URL");
+  if (!webhookUrl) return;
+
+  var message =
+    "📋 新訪客登記\n" +
+    "日期：" + (data.date || "") + "\n" +
+    "廠商：" + (data.vendor || "") + "\n" +
+    "姓名：" + (data.name || "") + "\n" +
+    "預計抵達：" + (data.arrival || "") + "\n" +
+    "對接同仁：" + (data.contact || "");
+
+  try {
+    UrlFetchApp.fetch(webhookUrl, {
+      method: "post",
+      payload: { payload: JSON.stringify({ text: message }) },
+      muteHttpExceptions: true,
+    });
+  } catch (err) {
+    // 通知失敗不影響登記本身寫入試算表
+  }
 }
 
 function doGet(e) {
