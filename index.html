@@ -6,7 +6,7 @@
 <title>訪客登記</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue-60: #0f62fe;
@@ -30,7 +30,7 @@
     padding: 0;
     background: var(--white);
     color: var(--gray-100);
-    font-family: "IBM Plex Sans TC", "IBM Plex Sans", "Noto Sans TC", -apple-system, sans-serif;
+    font-family: "Noto Sans TC", -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -89,7 +89,9 @@
   }
 
   .tile {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
     width: 100%;
     text-align: left;
     background: var(--gray-10);
@@ -104,6 +106,20 @@
   .tile:hover { background: #e8e8e8; }
   .tile:active,
   .tile:focus-visible { border-left-color: var(--blue-60); outline: none; }
+
+  .tile-icon {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    color: var(--blue-60);
+  }
+
+  .tile-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tile-body { flex: 1; }
 
   .tile-title {
     font-size: 16px;
@@ -317,14 +333,36 @@
       <p class="intro">請選擇廠商類型以開始登記。</p>
       <div class="tiles">
         <button type="button" class="tile" data-type="contracted">
-          <div class="tile-title">特約廠商</div>
-          <div class="tile-sub">Contracted Vendor</div>
-          <div class="tile-desc">輸入統一編號登入，自動帶入廠商 / 姓名 / 對接同仁</div>
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="6" width="26" height="20" rx="1"/>
+              <circle cx="11.5" cy="15" r="3"/>
+              <path d="M7 22c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/>
+              <line x1="19" y1="12" x2="25" y2="12"/>
+              <line x1="19" y1="16" x2="25" y2="16"/>
+            </svg>
+          </span>
+          <span class="tile-body">
+            <div class="tile-title">特約廠商</div>
+            <div class="tile-sub">Contracted Vendor</div>
+            <div class="tile-desc">輸入統一編號登入，自動帶入廠商 / 姓名 / 對接同仁</div>
+          </span>
         </button>
         <button type="button" class="tile" data-type="general">
-          <div class="tile-title">一般廠商</div>
-          <div class="tile-sub">General Vendor</div>
-          <div class="tile-desc">自行填寫完整登記資料</div>
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3h12l6 6v20H8z"/>
+              <path d="M20 3v6h6"/>
+              <line x1="12" y1="17" x2="23" y2="17"/>
+              <line x1="12" y1="22" x2="23" y2="22"/>
+              <line x1="12" y1="12" x2="16" y2="12"/>
+            </svg>
+          </span>
+          <span class="tile-body">
+            <div class="tile-title">一般廠商</div>
+            <div class="tile-sub">General Vendor</div>
+            <div class="tile-desc">自行填寫完整登記資料</div>
+          </span>
         </button>
       </div>
     </section>
