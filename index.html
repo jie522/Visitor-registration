@@ -12,6 +12,9 @@
     --blue-60: #0f62fe;
     --blue-70: #0043ce;
     --blue-10: #edf5ff;
+    --teal-60: #007d79;
+    --teal-70: #005d5d;
+    --teal-10: #d9fbfb;
     --gray-100: #161616;
     --gray-90: #262626;
     --gray-70: #525252;
@@ -103,15 +106,25 @@
     transition: background-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9), border-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
   }
 
-  .tile:hover { background: #e8e8e8; }
   .tile:active,
-  .tile:focus-visible { border-left-color: var(--blue-60); outline: none; }
+  .tile:focus-visible { outline: none; }
+
+  .tile[data-type="contracted"] { background: var(--blue-10); }
+  .tile[data-type="contracted"]:hover { background: #e0edff; }
+  .tile[data-type="contracted"]:active,
+  .tile[data-type="contracted"]:focus-visible { border-left-color: var(--blue-60); }
+  .tile[data-type="contracted"] .tile-icon { color: var(--blue-70); }
+
+  .tile[data-type="general"] { background: var(--teal-10); }
+  .tile[data-type="general"]:hover { background: #c3f5f5; }
+  .tile[data-type="general"]:active,
+  .tile[data-type="general"]:focus-visible { border-left-color: var(--teal-60); }
+  .tile[data-type="general"] .tile-icon { color: var(--teal-70); }
 
   .tile-icon {
     flex: none;
     width: 32px;
     height: 32px;
-    color: var(--blue-60);
   }
 
   .tile-icon svg {
