@@ -358,7 +358,7 @@
           <span class="tile-body">
             <div class="tile-title">特約廠商</div>
             <div class="tile-sub">Contracted Vendor</div>
-            <div class="tile-desc">輸入統一編號登入，自動帶入廠商 / 姓名 / 對接同仁</div>
+            <div class="tile-desc">輸入手機號碼登入，自動帶入廠商 / 姓名 / 對接同仁</div>
           </span>
         </button>
         <button type="button" class="tile" data-type="general">
@@ -380,14 +380,14 @@
       </div>
     </section>
 
-    <!-- 畫面 2：特約廠商統編登入 -->
+    <!-- 畫面 2：特約廠商手機登入 -->
     <section class="screen" id="screenAuth" hidden>
       <button type="button" class="back-link" id="authBack">‹ 返回選擇廠商類型</button>
-      <p class="intro">請輸入貴公司統一編號進行登入。</p>
-      <div class="field" id="taxidField">
-        <label for="taxid">統一編號 <span class="req">*</span></label>
-        <input type="text" id="taxid" inputmode="numeric" maxlength="8" placeholder="請輸入 8 碼統一編號">
-        <div class="error" id="taxidError">查無此統一編號，請確認後重新輸入，或改選一般廠商登記</div>
+      <p class="intro">請輸入登記時使用的手機號碼進行登入。</p>
+      <div class="field" id="phoneField">
+        <label for="phone">手機號碼 <span class="req">*</span></label>
+        <input type="tel" id="phone" inputmode="numeric" maxlength="10" placeholder="請輸入手機號碼，例如 0912345678">
+        <div class="error" id="phoneError">查無此手機號碼，請確認後重新輸入，或改選一般廠商登記</div>
       </div>
       <button type="button" class="primary-btn" id="authSubmit">
         <span id="authLabel">登入查詢</span>
@@ -509,10 +509,10 @@
       if (type === "general") {
         openGeneralForm();
       } else {
-        document.getElementById("taxidField").classList.remove("invalid");
-        document.getElementById("taxid").value = "";
+        document.getElementById("phoneField").classList.remove("invalid");
+        document.getElementById("phone").value = "";
         showScreen("auth");
-        document.getElementById("taxid").focus();
+        document.getElementById("phone").focus();
       }
     });
   });
@@ -520,8 +520,8 @@
   document.getElementById("authBack").addEventListener("click", () => showScreen("select"));
   document.getElementById("formBack").addEventListener("click", () => showScreen("select"));
 
-  // --- 特約廠商統編查詢（JSONP，避開 Apps Script 的 CORS 限制） ---
-  function lookupVendor(taxid) {
+  // --- 特約廠商手機查詢（JSONP，避開 Apps Script 的 CORS 限制） ---
+  function lookupVendor(phone) {
     return new Promise((resolve, reject) => {
       const cbName = "vendorCb_" + Date.now();
       const script = document.createElement("script");
@@ -539,7 +539,7 @@
         resolve(data);
       };
 
-      script.src = GAS_URL + "?action=lookup&taxid=" + encodeURIComponent(taxid) + "&callback=" + cbName;
+      script.src = GAS_URL + "?action=lookup&phone=" + encodeURIComponent(phone) + "&callback=" + cbName;
       script.onerror = () => {
         if (settled) return;
         settled = true;
@@ -557,25 +557,25 @@
     });
   }
 
-  const taxidField = document.getElementById("taxidField");
-  const taxidInput = document.getElementById("taxid");
+  const phoneField = document.getElementById("phoneField");
+  const phoneInput = document.getElementById("phone");
   const authSubmit = document.getElementById("authSubmit");
   const authLabel = document.getElementById("authLabel");
 
   async function submitAuth() {
-    const taxid = taxidInput.value.trim();
-    taxidField.classList.remove("invalid");
+    const phone = phoneInput.value.trim();
+    phoneField.classList.remove("invalid");
 
-    if (!taxid) {
-      taxidField.classList.add("invalid");
-      document.getElementById("taxidError").textContent = "請輸入統一編號";
-      taxidField.querySelector(".error").style.display = "block";
+    if (!phone) {
+      phoneField.classList.add("invalid");
+      document.getElementById("phoneError").textContent = "請輸入手機號碼";
+      phoneField.querySelector(".error").style.display = "block";
       return;
     }
 
     if (!GAS_URL || GAS_URL === "PASTE_YOUR_WEB_APP_URL_HERE") {
-      taxidField.classList.add("invalid");
-      document.getElementById("taxidError").textContent = "尚未設定 Google Apps Script 網址，請聯絡系統管理員";
+      phoneField.classList.add("invalid");
+      document.getElementById("phoneError").textContent = "尚未設定 Google Apps Script 網址，請聯絡系統管理員";
       return;
     }
 
@@ -583,16 +583,16 @@
     authLabel.textContent = "查詢中...";
 
     try {
-      const data = await lookupVendor(taxid);
+      const data = await lookupVendor(phone);
       if (data && data.found) {
         openContractedForm(data);
       } else {
-        taxidField.classList.add("invalid");
-        document.getElementById("taxidError").textContent = "查無此統一編號，請確認後重新輸入，或改選一般廠商登記";
+        phoneField.classList.add("invalid");
+        document.getElementById("phoneError").textContent = "查無此手機號碼，請確認後重新輸入，或改選一般廠商登記";
       }
     } catch (err) {
-      taxidField.classList.add("invalid");
-      document.getElementById("taxidError").textContent = "查詢失敗，請確認網路連線後重試";
+      phoneField.classList.add("invalid");
+      document.getElementById("phoneError").textContent = "查詢失敗，請確認網路連線後重試";
     } finally {
       authSubmit.disabled = false;
       authLabel.textContent = "登入查詢";
@@ -600,7 +600,7 @@
   }
 
   authSubmit.addEventListener("click", submitAuth);
-  taxidInput.addEventListener("keydown", (e) => {
+  phoneInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       submitAuth();

@@ -8,8 +8,8 @@
  * 4. 部署後複製「網頁應用程式網址」，貼到 index.html 裡的 GAS_URL
  *
  * 需要在同一份試算表中，另外建立一個名為「廠商名單」的工作表，
- * 欄位依序為：統編 / 廠商 / 姓名 / 對接同仁（第一列為標題列）。
- * 特約廠商登入時會用統編查詢這張表，自動帶入廠商 / 姓名 / 對接同仁。
+ * 欄位依序為：手機 / 廠商 / 姓名 / 對接同仁（第一列為標題列）。
+ * 特約廠商登入時會用手機號碼查詢這張表，自動帶入廠商 / 姓名 / 對接同仁。
  *
  * --- Synology Chat 通知（選用）---
  * 1. Synology Chat 後台 →「整合」→「Incoming Webhook」→ 新增，複製 Webhook 網址
@@ -76,7 +76,7 @@ function doGet(e) {
   var result = { error: "invalid action" };
 
   if (action === "lookup") {
-    result = lookupVendor(e.parameter.taxid || "");
+    result = lookupVendor(e.parameter.phone || "");
   }
 
   var callback = e.parameter.callback;
@@ -91,16 +91,16 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function lookupVendor(taxid) {
-  taxid = String(taxid).trim();
-  if (!taxid) return { found: false };
+function lookupVendor(phone) {
+  phone = String(phone).trim();
+  if (!phone) return { found: false };
 
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(VENDOR_SHEET_NAME);
   if (!sheet) return { found: false };
 
   var rows = sheet.getDataRange().getValues();
   for (var i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]).trim() === taxid) {
+    if (String(rows[i][0]).trim() === phone) {
       return {
         found: true,
         vendor: rows[i][1] || "",
