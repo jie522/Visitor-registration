@@ -12,6 +12,9 @@
     --blue-60: #0f62fe;
     --blue-70: #0043ce;
     --blue-10: #edf5ff;
+    --yellow-50: #b28600;
+    --yellow-60: #8e6a00;
+    --yellow-10: #fcf4d6;
     --teal-60: #007d79;
     --teal-70: #005d5d;
     --teal-10: #d9fbfb;
@@ -109,11 +112,11 @@
   .tile:active,
   .tile:focus-visible { outline: none; }
 
-  .tile[data-type="contracted"] { background: var(--blue-10); }
-  .tile[data-type="contracted"]:hover { background: #e0edff; }
+  .tile[data-type="contracted"] { background: var(--yellow-10); }
+  .tile[data-type="contracted"]:hover { background: #f7e8b0; }
   .tile[data-type="contracted"]:active,
-  .tile[data-type="contracted"]:focus-visible { border-left-color: var(--blue-60); }
-  .tile[data-type="contracted"] .tile-icon { color: var(--blue-70); }
+  .tile[data-type="contracted"]:focus-visible { border-left-color: var(--yellow-50); }
+  .tile[data-type="contracted"] .tile-icon { color: var(--yellow-60); }
 
   .tile[data-type="general"] { background: var(--teal-10); }
   .tile[data-type="general"]:hover { background: #c3f5f5; }
@@ -335,7 +338,7 @@
   <header>
     <div class="mark"></div>
     <div>
-      <h1>訪客登記表</h1>
+      <h1>詠基訪客登記表</h1>
       <p>260713 · Visitor Registration</p>
     </div>
   </header>
