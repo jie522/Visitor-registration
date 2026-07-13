@@ -43,7 +43,10 @@ function doPost(e) {
 
 function notifySynologyChat(data) {
   var webhookUrl = PropertiesService.getScriptProperties().getProperty("SYNO_WEBHOOK_URL");
-  if (!webhookUrl) return;
+  if (!webhookUrl) {
+    console.log("SYNO_WEBHOOK_URL 尚未設定，略過通知");
+    return;
+  }
 
   var message =
     "📋 新訪客登記\n" +
@@ -54,13 +57,17 @@ function notifySynologyChat(data) {
     "對接同仁：" + (data.contact || "");
 
   try {
-    UrlFetchApp.fetch(webhookUrl, {
+    var response = UrlFetchApp.fetch(webhookUrl, {
       method: "post",
       payload: { payload: JSON.stringify({ text: message }) },
       muteHttpExceptions: true,
     });
+    console.log(
+      "Synology webhook 回應碼：" + response.getResponseCode() +
+      "，內容：" + response.getContentText()
+    );
   } catch (err) {
-    // 通知失敗不影響登記本身寫入試算表
+    console.log("Synology webhook 呼叫失敗：" + err.message);
   }
 }
 
