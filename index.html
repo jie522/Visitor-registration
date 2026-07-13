@@ -79,6 +79,80 @@
     border-bottom: 1px solid var(--gray-20);
   }
 
+  .screen[hidden] { display: none; }
+
+  /* --- vendor type tiles --- */
+  .tiles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tile {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--gray-10);
+    border: none;
+    border-left: 3px solid transparent;
+    padding: 20px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9), border-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+  }
+
+  .tile:hover { background: #e8e8e8; }
+  .tile:active,
+  .tile:focus-visible { border-left-color: var(--blue-60); outline: none; }
+
+  .tile-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-100);
+  }
+
+  .tile-sub {
+    font-size: 11px;
+    color: var(--gray-50);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .tile-desc {
+    font-size: 13px;
+    color: var(--gray-70);
+    margin-top: 8px;
+  }
+
+  /* --- back link / badge --- */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue-60);
+    cursor: pointer;
+  }
+
+  .back-link:hover { color: var(--blue-70); text-decoration: underline; }
+
+  .badge {
+    display: inline-block;
+    background: var(--blue-10);
+    color: var(--blue-70);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    margin-bottom: 16px;
+  }
+
   form {
     display: flex;
     flex-direction: column;
@@ -159,6 +233,7 @@
     background-position: right 16px center;
   }
 
+  .primary-btn,
   button[type="submit"] {
     margin-top: 8px;
     height: 52px;
@@ -170,6 +245,7 @@
     border: none;
     border-radius: 0;
     cursor: pointer;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -177,10 +253,12 @@
     transition: background-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
   }
 
+  .primary-btn:hover,
   button[type="submit"]:hover { background: var(--blue-70); }
+  .primary-btn:disabled,
   button[type="submit"]:disabled { background: var(--gray-50); cursor: not-allowed; }
 
-  button[type="submit"] .arrow { font-size: 18px; line-height: 1; }
+  .arrow { font-size: 18px; line-height: 1; }
 
   .status {
     margin-top: 20px;
@@ -234,49 +312,86 @@
   </header>
 
   <main>
-    <p class="intro">請填寫以下資料完成訪客登記，資料將直接送出予櫃檯 / 對接同仁確認。</p>
-
-    <form id="visitorForm" novalidate>
-      <div class="field" data-field="date">
-        <label for="date">日期 <span class="req">*</span></label>
-        <input type="date" id="date" name="date" required>
-        <div class="error">請選擇日期</div>
+    <!-- 畫面 1：選擇廠商類型 -->
+    <section class="screen" id="screenSelect">
+      <p class="intro">請選擇廠商類型以開始登記。</p>
+      <div class="tiles">
+        <button type="button" class="tile" data-type="contracted">
+          <div class="tile-title">特約廠商</div>
+          <div class="tile-sub">Contracted Vendor</div>
+          <div class="tile-desc">輸入統一編號登入，自動帶入廠商 / 姓名 / 對接同仁</div>
+        </button>
+        <button type="button" class="tile" data-type="general">
+          <div class="tile-title">一般廠商</div>
+          <div class="tile-sub">General Vendor</div>
+          <div class="tile-desc">自行填寫完整登記資料</div>
+        </button>
       </div>
+    </section>
 
-      <div class="field" data-field="vendor">
-        <label for="vendor">廠商 <span class="req">*</span></label>
-        <input type="text" id="vendor" name="vendor" placeholder="請輸入公司 / 廠商名稱" required>
-        <div class="error">請輸入廠商名稱</div>
+    <!-- 畫面 2：特約廠商統編登入 -->
+    <section class="screen" id="screenAuth" hidden>
+      <button type="button" class="back-link" id="authBack">‹ 返回選擇廠商類型</button>
+      <p class="intro">請輸入貴公司統一編號進行登入。</p>
+      <div class="field" id="taxidField">
+        <label for="taxid">統一編號 <span class="req">*</span></label>
+        <input type="text" id="taxid" inputmode="numeric" maxlength="8" placeholder="請輸入 8 碼統一編號">
+        <div class="error" id="taxidError">查無此統一編號，請確認後重新輸入，或改選一般廠商登記</div>
       </div>
-
-      <div class="field" data-field="name">
-        <label for="name">姓名 <span class="req">*</span></label>
-        <input type="text" id="name" name="name" placeholder="請輸入訪客姓名" required>
-        <div class="error">請輸入姓名</div>
-      </div>
-
-      <div class="field" data-field="arrival">
-        <label for="arrival">預計抵達時間 <span class="req">*</span></label>
-        <input type="time" id="arrival" name="arrival" required>
-        <div class="error">請選擇預計抵達時間</div>
-      </div>
-
-      <div class="field" data-field="contact">
-        <label for="contact">對接同仁 <span class="req">*</span></label>
-        <input type="text" id="contact" name="contact" placeholder="請輸入對接同仁姓名" required>
-        <div class="error">請輸入對接同仁</div>
-      </div>
-
-      <button type="submit" id="submitBtn">
-        <span id="submitLabel">送出登記</span>
-        <span class="arrow" id="submitArrow">→</span>
+      <button type="button" class="primary-btn" id="authSubmit">
+        <span id="authLabel">登入查詢</span>
+        <span class="arrow">→</span>
       </button>
+    </section>
 
-      <div class="status" id="statusBox">
-        <div class="dot"></div>
-        <div id="statusText"></div>
-      </div>
-    </form>
+    <!-- 畫面 3：登記表單 -->
+    <section class="screen" id="screenForm" hidden>
+      <div class="badge" id="vendorBadge"></div>
+      <button type="button" class="back-link" id="formBack">‹ 重新選擇</button>
+      <p class="intro">請確認以下資料完成訪客登記，資料將直接送出予櫃檯 / 對接同仁確認。</p>
+
+      <form id="visitorForm" novalidate>
+        <div class="field" data-field="date">
+          <label for="date">日期 <span class="req">*</span></label>
+          <input type="date" id="date" name="date" required>
+          <div class="error">請選擇日期</div>
+        </div>
+
+        <div class="field" data-field="vendor">
+          <label for="vendor">廠商 <span class="req">*</span></label>
+          <input type="text" id="vendor" name="vendor" placeholder="請輸入公司 / 廠商名稱" required>
+          <div class="error">請輸入廠商名稱</div>
+        </div>
+
+        <div class="field" data-field="name">
+          <label for="name">姓名 <span class="req">*</span></label>
+          <input type="text" id="name" name="name" placeholder="請輸入訪客姓名" required>
+          <div class="error">請輸入姓名</div>
+        </div>
+
+        <div class="field" data-field="arrival">
+          <label for="arrival">預計抵達時間 <span class="req">*</span></label>
+          <input type="time" id="arrival" name="arrival" required>
+          <div class="error">請選擇預計抵達時間</div>
+        </div>
+
+        <div class="field" data-field="contact">
+          <label for="contact">對接同仁 <span class="req">*</span></label>
+          <input type="text" id="contact" name="contact" placeholder="請輸入對接同仁姓名" required>
+          <div class="error">請輸入對接同仁</div>
+        </div>
+
+        <button type="submit" id="submitBtn">
+          <span id="submitLabel">送出登記</span>
+          <span class="arrow">→</span>
+        </button>
+
+        <div class="status" id="statusBox">
+          <div class="dot"></div>
+          <div id="statusText"></div>
+        </div>
+      </form>
+    </section>
   </main>
 
   <footer>由 Google Sheet 驅動 · 資料僅供內部訪客管理使用</footer>
@@ -285,17 +400,163 @@
   // 部署 Apps Script Web App 後，將網址貼在這裡
   const GAS_URL = "https://script.google.com/macros/s/AKfycbwe6O7oCqGGjeg8qPuSil5B_5G2pNY_j1I9N2WXzXTo1B_UHq2n2SoYa-LgswTv0sXt/exec";
 
+  const screens = {
+    select: document.getElementById("screenSelect"),
+    auth: document.getElementById("screenAuth"),
+    form: document.getElementById("screenForm"),
+  };
+
+  function showScreen(name) {
+    Object.entries(screens).forEach(([key, el]) => {
+      el.hidden = key !== name;
+    });
+    window.scrollTo({ top: 0 });
+  }
+
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+
   const form = document.getElementById("visitorForm");
   const submitBtn = document.getElementById("submitBtn");
   const submitLabel = document.getElementById("submitLabel");
   const statusBox = document.getElementById("statusBox");
   const statusText = document.getElementById("statusText");
-
-  // 日期預設今天
   const dateInput = document.getElementById("date");
-  const today = new Date();
-  dateInput.value = today.toISOString().slice(0, 10);
+  const vendorInput = document.getElementById("vendor");
+  const nameInput = document.getElementById("name");
+  const arrivalInput = document.getElementById("arrival");
+  const contactInput = document.getElementById("contact");
+  const vendorBadge = document.getElementById("vendorBadge");
 
+  function resetFormFields() {
+    form.reset();
+    form.querySelectorAll(".field").forEach((f) => f.classList.remove("invalid"));
+    statusBox.className = "status";
+    dateInput.value = todayStr;
+  }
+
+  function openGeneralForm() {
+    resetFormFields();
+    vendorBadge.textContent = "一般廠商";
+    showScreen("form");
+    vendorInput.focus();
+  }
+
+  function openContractedForm(vendorData) {
+    resetFormFields();
+    vendorInput.value = vendorData.vendor || "";
+    nameInput.value = vendorData.name || "";
+    contactInput.value = vendorData.contact || "";
+    vendorBadge.textContent = "特約廠商 · " + (vendorData.vendor || "");
+    showScreen("form");
+    arrivalInput.focus();
+  }
+
+  document.querySelectorAll(".tile").forEach((tile) => {
+    tile.addEventListener("click", () => {
+      const type = tile.dataset.type;
+      if (type === "general") {
+        openGeneralForm();
+      } else {
+        document.getElementById("taxidField").classList.remove("invalid");
+        document.getElementById("taxid").value = "";
+        showScreen("auth");
+        document.getElementById("taxid").focus();
+      }
+    });
+  });
+
+  document.getElementById("authBack").addEventListener("click", () => showScreen("select"));
+  document.getElementById("formBack").addEventListener("click", () => showScreen("select"));
+
+  // --- 特約廠商統編查詢（JSONP，避開 Apps Script 的 CORS 限制） ---
+  function lookupVendor(taxid) {
+    return new Promise((resolve, reject) => {
+      const cbName = "vendorCb_" + Date.now();
+      const script = document.createElement("script");
+      let settled = false;
+
+      const cleanup = () => {
+        delete window[cbName];
+        script.remove();
+      };
+
+      window[cbName] = (data) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(data);
+      };
+
+      script.src = GAS_URL + "?action=lookup&taxid=" + encodeURIComponent(taxid) + "&callback=" + cbName;
+      script.onerror = () => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error("network"));
+      };
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error("timeout"));
+      }, 8000);
+    });
+  }
+
+  const taxidField = document.getElementById("taxidField");
+  const taxidInput = document.getElementById("taxid");
+  const authSubmit = document.getElementById("authSubmit");
+  const authLabel = document.getElementById("authLabel");
+
+  async function submitAuth() {
+    const taxid = taxidInput.value.trim();
+    taxidField.classList.remove("invalid");
+
+    if (!taxid) {
+      taxidField.classList.add("invalid");
+      document.getElementById("taxidError").textContent = "請輸入統一編號";
+      taxidField.querySelector(".error").style.display = "block";
+      return;
+    }
+
+    if (!GAS_URL || GAS_URL === "PASTE_YOUR_WEB_APP_URL_HERE") {
+      taxidField.classList.add("invalid");
+      document.getElementById("taxidError").textContent = "尚未設定 Google Apps Script 網址，請聯絡系統管理員";
+      return;
+    }
+
+    authSubmit.disabled = true;
+    authLabel.textContent = "查詢中...";
+
+    try {
+      const data = await lookupVendor(taxid);
+      if (data && data.found) {
+        openContractedForm(data);
+      } else {
+        taxidField.classList.add("invalid");
+        document.getElementById("taxidError").textContent = "查無此統一編號，請確認後重新輸入，或改選一般廠商登記";
+      }
+    } catch (err) {
+      taxidField.classList.add("invalid");
+      document.getElementById("taxidError").textContent = "查詢失敗，請確認網路連線後重試";
+    } finally {
+      authSubmit.disabled = false;
+      authLabel.textContent = "登入查詢";
+    }
+  }
+
+  authSubmit.addEventListener("click", submitAuth);
+  taxidInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitAuth();
+    }
+  });
+
+  // --- 登記表單送出 ---
   function setStatus(type, message) {
     statusBox.className = "status show " + type;
     statusText.textContent = message;
@@ -331,10 +592,10 @@
 
     const payload = {
       date: dateInput.value,
-      vendor: document.getElementById("vendor").value.trim(),
-      name: document.getElementById("name").value.trim(),
-      arrival: document.getElementById("arrival").value,
-      contact: document.getElementById("contact").value.trim(),
+      vendor: vendorInput.value.trim(),
+      name: nameInput.value.trim(),
+      arrival: arrivalInput.value,
+      contact: contactInput.value.trim(),
     };
 
     submitBtn.disabled = true;
@@ -349,8 +610,6 @@
       });
 
       setStatus("success", "登記成功，感謝您的到訪！");
-      form.reset();
-      dateInput.value = today.toISOString().slice(0, 10);
     } catch (err) {
       setStatus("error", "送出失敗，請確認網路連線後重試");
     } finally {
